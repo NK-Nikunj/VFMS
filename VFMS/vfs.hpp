@@ -4,30 +4,10 @@
 #include <vector>
 #include <iostream>
 
+#include "file.hpp"
+
 namespace vfms
 {
-    class file
-    {
-        // file name
-        std::string file_name;
-        // file content. We assume that we get a vector of paragraphs.
-        std::vector<std::string> file_content;
-
-
-    public:
-
-        // Fill in the file with the content added by the user.
-        file* create_file(std::vector<std::string> content)
-        {
-            // Iterating over every paragraph
-            for(auto&& element: content)
-            {
-                this -> file_content.push_back(element);
-            }
-            return this;
-        }
-    };
-
     class vfs
     {
         // folder will be of the type vfs
