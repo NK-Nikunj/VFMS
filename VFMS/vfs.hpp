@@ -11,7 +11,7 @@ namespace vfms
     class vfs
     {
         // folder will be of the type vfs
-        std::vector<vfms::vfs> folder;
+        std::vector<vfms::vfs> folders;
         // folder name for the current vfs
         std::string vfs_name;
         // a folder can contain files as well
@@ -19,6 +19,7 @@ namespace vfms
 
 
     public:
+        // Create folder
         vfs* create_folder(std::string folder_name)
         {
             vfs* new_folder = new vfs;
@@ -27,16 +28,36 @@ namespace vfms
             return new_folder;
         }
 
+        // Remove folder
         void remove_folder(std::string folder_name)
         {
-            auto it = this -> folder.begin();
-            while(it != this -> folder.end())
+            auto it = this -> folders.begin();
+            while(it != this -> folders.end())
             {
                 if((*it).vfs_name == folder_name)
-                    it = folder.erase(it);
+                    it = folders.erase(it);
                 else
                     ++it;
             }
+        }
+
+        // 'ls' command
+        void show_content()
+        {
+            for(auto& folder: this -> folders)
+            {
+                std::cout << folder.vfs_name << std::endl;
+            }
+            for(auto& file_name: this -> file)
+            {
+                std::cout << file_name.get_file_name << std::endl;
+            }
+        }
+
+        // Go to folder
+        vfs* const go_to(std::string args)
+        {
+            
         }
     };
 }

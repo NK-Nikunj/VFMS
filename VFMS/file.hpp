@@ -16,6 +16,12 @@ namespace vfms
 
     public:
 
+        // Get file name
+        std::string get_file_name()
+        {
+            return this -> file_name;
+        }
+
         // Fill in the file with the content added by the user.
         file* create_file(std::vector<std::string> content)
         {
