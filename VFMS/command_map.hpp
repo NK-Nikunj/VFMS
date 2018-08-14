@@ -15,6 +15,7 @@ namespace vfms
         touch,
         ned,
         cat,
+        quit,
         // TODO:
         // cp,
         // mv
@@ -30,6 +31,7 @@ namespace vfms
         { "touch", commands::touch },
         { "ned", commands::ned },
         { "cat", commands::cat },
+        { "quit", commands::quit },
     };
 }
 

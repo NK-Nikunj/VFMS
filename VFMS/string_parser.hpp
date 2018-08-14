@@ -24,12 +24,14 @@ namespace vfms
         }
 
         // Process the arguments and evaluate
-        void process_args(vfms::vfs* current_folder)
+        vfms::vfs* process_args(vfms::vfs* current_folder)
         {
             // If user did not add any arguments, simply move ahead.
-            if(this -> arguments.size())
-                return;
-
+            if(this -> arguments.size() == 0)
+            {
+                return current_folder;
+            }
+                
             commands command_type;
             // unordered_map returns an exception if it doesn't find any element.
             try
@@ -39,7 +41,7 @@ namespace vfms
             {
                 // Command could not be found in the list of valid command.
                 std::cerr << this -> arguments[0] << " is not a valid command." << std::endl;
-                return;
+                return current_folder;
             }
 
             switch(command_type)
@@ -50,6 +52,7 @@ namespace vfms
                         // Since argument count is 1, simply show contents from current
                         // directory.
                         current_folder -> show_content();
+                    
                     } else if(this -> arguments.size() == 2)
                     {
                         // Move to the specified directory. If there is none then raise
@@ -60,13 +63,15 @@ namespace vfms
                         // Check if an error was raised
                         if(get_to_folder != nullptr)
                             get_to_folder -> show_content();
+                    
                     } else
                     {   
                         // Incorrect usage of the command. Raise an error.
                         std::cerr << "Wrong use of command 'ls'.\n"
                             "Usage: ls path/to/directory" << std::endl;
                     }
-                    break;
+                    // Return back the current folder
+                    return current_folder;
                 
                 case mkdir:
                     if(this -> arguments.size() == 1)
@@ -74,7 +79,7 @@ namespace vfms
                         // Incorrect usage of mkdir. Raise an error.
                         std::cerr << "Wrong use of command 'mkdir'.\n"
                             "Usage: mkdir dir1 dir2 dir3" << std::endl;
-                        return;
+
                     } else
                     {
                         for(int i = 1; i != this -> arguments.size(); ++i)
@@ -85,13 +90,16 @@ namespace vfms
                             vfms::vfs* get_to_folder =
                                 current_folder -> go_to(this -> arguments[i]);
 
-                            if(get_to_folder == nullptr)
+                            if(get_to_folder == nullptr){
                                 current_folder -> create_folder(this -> arguments[i]);
-                            else
+                            }
+                            else{
                                 get_to_folder -> create_folder(this -> arguments[i]);
+                            }
                         }
                     }
-                    break;
+                    // Return back the current folder
+                    return current_folder;
                 
                 case cd:
                     break;
@@ -100,6 +108,10 @@ namespace vfms
                     break;
                 
                 case ned:
+                    break;
+                
+                case quit:
+                    std::exit(0);
                     break;
             }
         }

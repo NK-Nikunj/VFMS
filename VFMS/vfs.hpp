@@ -21,12 +21,25 @@ namespace vfms
 
 
     public:
+
+        // Set folder name
+        void set_vfs_name(std::string vfs_name)
+        {
+            this -> vfs_name = vfs_name;
+            return;
+        }
+
         // Create folder
         vfs* create_folder(std::string folder_name)
         {
+            // Create a new folder pointer
             vfs* new_folder = new vfs;
+            // push it to the current list of folders
+            this -> folders.push_back(new_folder);
+            // set folder name for new folder 
             new_folder -> vfs_name = folder_name;
 
+            // Return pointer to new folder, in case needed
             return new_folder;
         }
 
@@ -46,14 +59,17 @@ namespace vfms
         // 'ls' command
         void show_content()
         {
-            for(auto& folder: this -> folders)
+            if(!this -> folders.empty())
             {
-                std::cout << folder -> vfs_name << std::endl;
+                for(auto& folder: this -> folders)
+                    std::cout << folder -> vfs_name << std::endl;
             }
-            for(auto& file_name: this -> file)
+            if(!this -> file.empty())
             {
-                std::cout << file_name -> get_file_name() << std::endl;
+                for(auto& file_name: this -> file)
+                    std::cout << file_name -> get_file_name() << std::endl;
             }
+
         }
 
         // Go to folder
