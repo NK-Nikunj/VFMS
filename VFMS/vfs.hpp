@@ -64,6 +64,9 @@ namespace vfms
             folder_list = 
                     boost::split(folder_list, args, boost::is_any_of("/"));
             
+            if(folder_list.size() == 1)
+                return nullptr;
+
             for(auto&& folder_name: folder_list)
             {
                 vfs* temp = go_to_folder;

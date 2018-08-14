@@ -26,6 +26,10 @@ namespace vfms
         // Process the arguments and evaluate
         void process_args(vfms::vfs* current_folder)
         {
+            // If user did not add any arguments, simply move ahead.
+            if(this -> arguments.size())
+                return;
+
             commands command_type;
             // unordered_map returns an exception if it doesn't find any element.
             try
@@ -43,19 +47,50 @@ namespace vfms
                 case ls:
                     if(this -> arguments.size() == 1)
                     {
+                        // Since argument count is 1, simply show contents from current
+                        // directory.
                         current_folder -> show_content();
                     } else if(this -> arguments.size() == 2)
                     {
+                        // Move to the specified directory. If there is none then raise
+                        // alert that the folder does not exists.
                         vfms::vfs* get_to_folder =
                                         current_folder -> go_to(this -> arguments[1]);
-                        get_to_folder -> show_content();
+                        
+                        // Check if an error was raised
+                        if(get_to_folder != nullptr)
+                            get_to_folder -> show_content();
                     } else
-                    {
-                        std::cerr << "Wrong use of command 'ls'." << std::endl;
+                    {   
+                        // Incorrect usage of the command. Raise an error.
+                        std::cerr << "Wrong use of command 'ls'.\n"
+                            "Usage: ls path/to/directory" << std::endl;
                     }
                     break;
                 
                 case mkdir:
+                    if(this -> arguments.size() == 1)
+                    {
+                        // Incorrect usage of mkdir. Raise an error.
+                        std::cerr << "Wrong use of command 'mkdir'.\n"
+                            "Usage: mkdir dir1 dir2 dir3" << std::endl;
+                        return;
+                    } else
+                    {
+                        for(int i = 1; i != this -> arguments.size(); ++i)
+                        {
+                            // Move to the specified directory. If there is 
+                            // none then raise alert that the folder 
+                            // does not exists.
+                            vfms::vfs* get_to_folder =
+                                current_folder -> go_to(this -> arguments[i]);
+
+                            if(get_to_folder == nullptr)
+                                current_folder -> create_folder(this -> arguments[i]);
+                            else
+                                get_to_folder -> create_folder(this -> arguments[i]);
+                        }
+                    }
                     break;
                 
                 case cd:
