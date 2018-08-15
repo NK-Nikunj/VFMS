@@ -128,12 +128,63 @@ namespace vfms
                     }
                     // Return back the current folder
                     return current_folder;
-                
+
+
+                // 'touch' command creates a file with the given name                
                 case touch:
-                    break;
+                    if(this -> arguments.size() == 1)
+                    {
+                        std::cerr << "Wrong use of command 'touch'.\n"
+                            "Usage: touch file1 file2 file3 .." << std::endl;
+                    } else
+                    {
+                        for(auto args = this -> arguments.begin() + 1;
+                            args != this -> arguments.end();
+                            ++args)
+                        {
+                            vfms::vfs* temp = current_folder;
+                            // Returned tuple containing the details
+                            auto returned_tuple = current_folder -> go_to_file(*args);
+                            // Store folder address as a temperory variable
+                            temp = std::get<0>(returned_tuple);
+                            // initialize file_name with returned file name
+                            std::string file_name = std::get<1>(returned_tuple);
+
+                            // check if the file name is actually a folder name
+                            bool is_file_folder = current_folder -> is_folder(file_name);
+
+                            // No error is raised when file has name 
+                            // matching to directory
+                            if(is_file_folder)
+                                continue;
+                            else
+                            {
+                                // No file or directory found
+                                if(temp == nullptr)
+                                {
+                                    // Raise error
+                                    std::cerr << "touch: cannot touch '"
+                                        << *args << "': No such file or "
+                                        "directory" << std::endl;
+                                } else
+                                {
+                                    // Create file and set it's name
+                                    vfms::file* new_file = new vfms::file;
+                                    new_file -> set_file_name(*args);
+
+                                    // Add file to current source tree
+                                    temp -> add_file(new_file);
+                                }
+                            }
+                            
+                        }
+                    }
+                    // Return back the current folder
+                    return current_folder;
                 
                 case ned:
                     break;
+
 
                 // 'cat' command shows content of files
                 case cat:
@@ -189,7 +240,6 @@ namespace vfms
                 
                 case quit:
                     std::exit(0);
-                    break;
             }
         }
     };

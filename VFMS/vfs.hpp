@@ -274,6 +274,12 @@ namespace vfms
             }
             return std::make_tuple(nullptr, false);
         }
+
+        // Add file
+        void add_file(vfms::file* new_file)
+        {
+            this -> file.push_back(new_file);
+        }
     };
 }
 

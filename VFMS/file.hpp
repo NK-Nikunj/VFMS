@@ -16,6 +16,12 @@ namespace vfms
 
     public:
 
+        // Set file name
+        void set_file_name(std::string& file_name)
+        {
+            this -> file_name = file_name;
+        }
+
         // Get file name
         std::string get_file_name()
         {
