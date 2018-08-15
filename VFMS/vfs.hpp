@@ -12,6 +12,7 @@ namespace vfms
 {
     class vfs
     {
+        vfms::vfs* parent_folder;
         // folder will be of the type vfs
         std::vector<vfms::vfs*> folders;
         // folder name for the current vfs
@@ -29,15 +30,54 @@ namespace vfms
             return;
         }
 
+        // Get folder name
+        std::string get_folder_name()
+        {
+            // Returns the name of the current folder
+            return this -> vfs_name;
+        }
+
+        // Move one step up in directory
+        vfs* move_up()
+        {
+            if(this == nullptr)
+                return nullptr;
+            
+            return this -> parent_folder;
+        }
+
+        // Get parent_folder
+        vfs* get_parent_folder()
+        {
+            // Returns the parent folder address
+            return this -> parent_folder;
+        }
+
         // Create folder
         vfs* create_folder(std::string folder_name)
         {
+            // Check whether folder/file with same name exists
+            if(!this -> folders.empty())
+            {
+                for(auto& folder: this -> folders)
+                {
+                    if(folder -> vfs_name == folder_name)
+                    {
+                        std::cerr << "mkdir: cannot create directory '"
+                            << folder_name << "': File exists" << std::endl;
+                        return nullptr;
+                    }
+                }
+            }
+
             // Create a new folder pointer
             vfs* new_folder = new vfs;
             // push it to the current list of folders
             this -> folders.push_back(new_folder);
             // set folder name for new folder 
             new_folder -> vfs_name = folder_name;
+            // set parent directory
+            new_folder -> parent_folder = this;
 
             // Return pointer to new folder, in case needed
             return new_folder;
@@ -73,15 +113,15 @@ namespace vfms
         }
 
         // Go to folder
-        vfs* go_to(std::string args)
+        vfs* go_to(std::string args, bool return_for_mkdir = false)
         {
             vfs* go_to_folder = this;
             std::vector<std::string> folder_list;
             folder_list = 
                     boost::split(folder_list, args, boost::is_any_of("/"));
-            
-            if(folder_list.size() == 1)
-                return nullptr;
+
+            if(folder_list.size() == 1 && return_for_mkdir)
+                return this;
 
             for(auto&& folder_name: folder_list)
             {

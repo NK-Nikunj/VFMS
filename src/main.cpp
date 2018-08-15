@@ -1,5 +1,8 @@
 #include <iostream>
 
+#include <iterator>
+#include <algorithm>
+
 #include "../VFMS/vfs.hpp"
 #include "../VFMS/file.hpp"
 #include "../VFMS/string_parser.hpp"
@@ -25,7 +28,27 @@ int main(int argc, char** argv)
 
     while(true)
     {        
-        std::cout << "virtual@user:~";
+        std::cout << "virtual@user:";
+
+        vfms::vfs* temp = root;
+
+        std::string dir = "";
+        while(temp != nullptr)
+        {
+            dir.append(temp -> get_folder_name());
+            temp = temp -> move_up();
+            dir.append("/");
+        }
+        std::vector<std::string> dir_list;
+        dir_list = 
+                    boost::split(dir_list, dir, boost::is_any_of("/"));
+        std::reverse(std::begin(dir_list), std::end(dir_list));
+
+        for(auto&& directories: dir_list)
+            std::cout << directories << "/";
+        
+        std::cout << "$";
+
         std::getline(std::cin, parsed_string);
 
         std::vector<std::string> args;

@@ -46,6 +46,7 @@ namespace vfms
 
             switch(command_type)
             {
+                // 'ls' command shows files and folders in the current directory
                 case ls:
                     if(this -> arguments.size() == 1)
                     {
@@ -60,7 +61,7 @@ namespace vfms
                         vfms::vfs* get_to_folder =
                                         current_folder -> go_to(this -> arguments[1]);
                         
-                        // Check if an error was raised
+                        // Check if an error wasn't raised
                         if(get_to_folder != nullptr)
                             get_to_folder -> show_content();
                     
@@ -73,6 +74,7 @@ namespace vfms
                     // Return back the current folder
                     return current_folder;
                 
+                // 'mkdir' can create multiple folders at a single time
                 case mkdir:
                     if(this -> arguments.size() == 1)
                     {
@@ -88,12 +90,14 @@ namespace vfms
                             // none then raise alert that the folder 
                             // does not exists.
                             vfms::vfs* get_to_folder =
-                                current_folder -> go_to(this -> arguments[i]);
+                                current_folder -> go_to(this -> arguments[i], true);
 
-                            if(get_to_folder == nullptr){
+                            if(get_to_folder == current_folder){
+                                // Make directory in the current folder
                                 current_folder -> create_folder(this -> arguments[i]);
-                            }
-                            else{
+                            } else if(get_to_folder != nullptr)
+                            {
+                                // Make directory in a different folder
                                 get_to_folder -> create_folder(this -> arguments[i]);
                             }
                         }
@@ -102,7 +106,24 @@ namespace vfms
                     return current_folder;
                 
                 case cd:
-                    break;
+                    if(this -> arguments.size() == 2)
+                    {
+                        vfms::vfs* temp = current_folder;
+                        temp = current_folder -> go_to(this -> arguments[1]);
+
+                        // Only assign temp to current folder when there is no
+                        // error raised.
+                        if(temp != nullptr)
+                            current_folder = temp;
+
+                    } else
+                    {
+                        // Incorrect usage of cd. Raise an error.
+                        std::cerr << "Wrong use of command 'cd'.\n"
+                            "Usage: cd path/to/dir" << std::endl;                        
+                    }
+                    // Return back the current folder
+                    return current_folder;
                 
                 case touch:
                     break;
