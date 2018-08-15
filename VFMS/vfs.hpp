@@ -18,8 +18,11 @@ namespace vfms
         // folder name for the current vfs
         std::string vfs_name;
         // a folder can contain files as well
-        std::vector<vfms::file*> file;         
+        std::vector<vfms::file*> file;
 
+        // Special aliases for 'cd' movement
+        std::string folder_alias = ".";
+        std::string parent_folder_alias = "..";
 
     public:
 
@@ -120,25 +123,53 @@ namespace vfms
             folder_list = 
                     boost::split(folder_list, args, boost::is_any_of("/"));
 
+            // We do not care if the last element was an empty string.
+            // Popping this element will eliminate any unexpected results
+            auto it = folder_list.end() - 1;
+            if(*it == "")
+                folder_list.pop_back();
+
             if(folder_list.size() == 1 && return_for_mkdir)
                 return this;
 
             for(auto&& folder_name: folder_list)
             {
-                vfs* temp = go_to_folder;
-                for(auto& folder: go_to_folder -> folders)
+
+                if(folder_name == this -> folder_alias)
                 {
-                    if(folder -> vfs_name == folder_name)
+                    // Get back to same folder
+                    continue;
+
+                } else if(folder_name == this -> parent_folder_alias)
+                {
+                    // Go to parent folder
+                    vfs* temp = go_to_folder;
+                    temp = go_to_folder -> move_up();
+                    if(temp == nullptr)
                     {
-                        go_to_folder = folder;
-                        break;
-                    }
-                }
-                if(go_to_folder == temp)
+                        // Trying to go above root of our directory.
+                        std::cerr << "Cannot determine the location"
+                            " to place the directory." << std::endl;
+                    } else
+                        go_to_folder = temp;
+
+                } else
                 {
-                    std::cerr << "No directory exists by the name of "
-                        << folder_name << std::endl;
-                    return nullptr;
+                    vfs* temp = go_to_folder;
+                    for(auto& folder: go_to_folder -> folders)
+                    {
+                        if(folder -> vfs_name == folder_name)
+                        {
+                            go_to_folder = folder;
+                            break;
+                        }
+                    }
+                    if(go_to_folder == temp)
+                    {
+                        std::cerr << "No directory exists by the name of "
+                            << folder_name << std::endl;
+                        return nullptr;
+                    }
                 }
             }
 
