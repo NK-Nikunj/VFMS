@@ -2,3 +2,14 @@
 build/
 
 .vscode/
+
+# Main binary created
+vfms
+
+# Any dynamic library
+*.so
+*.dll
+*.dylib
+
+# Any static library
+*.a

@@ -3,9 +3,9 @@
 #include <iterator>
 #include <algorithm>
 
-#include "../VFMS/vfs.hpp"
-#include "../VFMS/file.hpp"
-#include "../VFMS/string_parser.hpp"
+#include <VFMS/vfs.hpp>
+#include <VFMS/file.hpp>
+#include <VFMS/string_parser.hpp>
 
 
 // Currently there is no support for argument analysis.
