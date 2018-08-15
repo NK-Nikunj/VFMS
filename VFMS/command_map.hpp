@@ -5,7 +5,7 @@
 #include <iostream>
 
 namespace vfms
-{   
+{
     // List of all valid commands allowed to user
     enum commands
     {
@@ -23,16 +23,7 @@ namespace vfms
 
     // We store all the valid_commnads in an unordered map
     // for a fast access. Due to it's inline nature we require C++17
-    inline std::unordered_map<std::string, commands> valid_commands = 
-    {
-        {"ls", commands::ls},
-        { "mkdir", commands::mkdir },
-        { "cd", commands::cd },
-        { "touch", commands::touch },
-        { "ned", commands::ned },
-        { "cat", commands::cat },
-        { "quit", commands::quit },
-    };
+    extern std::unordered_map<std::string, commands> valid_commands;
 }
 
 #endif /* STRING_MAP_HPP */
