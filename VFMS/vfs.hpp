@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include <tuple>
 
 #include <boost/algorithm/string.hpp>
 
@@ -174,6 +175,104 @@ namespace vfms
             }
 
             return go_to_folder;
+        }
+
+        // Go to folder containing file
+        std::tuple<vfs*, std::string> go_to_file(std::string args)
+        {
+            vfs* go_to_folder = this;
+            std::vector<std::string> folder_list;
+            folder_list = 
+                    boost::split(folder_list, args, boost::is_any_of("/"));
+
+            // We do not care if the last element was an empty string.
+            // Popping this element will eliminate any unexpected results
+            auto it = folder_list.end() - 1;
+            if(*it == "")
+                folder_list.pop_back();
+
+            it = folder_list.end() - 1;
+
+            // Store file name to send it as a tuple
+            std::string file_name = (*it);
+
+            // Send a tuple with folder address and file name
+            if(folder_list.size() == 1 && (*it) != "." && (*it) != "..")
+                return std::make_tuple(this, file_name);
+
+            // Pops the file name from the list
+            folder_list.pop_back();
+
+            for(auto&& folder_name: folder_list)
+            {
+
+                if(folder_name == this -> folder_alias)
+                {
+                    // Get back to same folder
+                    continue;
+
+                } else if(folder_name == this -> parent_folder_alias)
+                {
+                    // Go to parent folder
+                    vfs* temp = go_to_folder;
+                    temp = go_to_folder -> move_up();
+                    if(temp == nullptr)
+                    {
+                        // Trying to go above root of our directory.
+                        std::cerr << "Cannot determine the location"
+                            " to place the directory." << std::endl;
+                    } else
+                        go_to_folder = temp;
+
+                } else
+                {
+                    vfs* temp = go_to_folder;
+                    for(auto& folder: go_to_folder -> folders)
+                    {
+                        if(folder -> vfs_name == folder_name)
+                        {
+                            go_to_folder = folder;
+                            break;
+                        }
+                    }
+                    if(go_to_folder == temp)
+                    {
+                        std::cerr << "No directory exists by the name of "
+                            << folder_name << std::endl;
+                        return std::make_tuple(nullptr, file_name);
+                    }
+                }
+            }
+
+            return std::make_tuple(go_to_folder, file_name);
+        }
+
+        // Is folder
+        bool is_folder(std::string name)
+        {
+            if(name == "." || name == "..")
+                return false;
+            
+            // check if folder name matches with file name
+            for(auto& folder: this -> folders)
+            {
+                if(folder -> vfs_name == name)
+                    return true;
+            }
+
+            // folder name didn't match
+            return false;
+        }
+
+        // File status
+        std::tuple<vfms::file*, bool> get_file(std::string file_name)
+        {
+            for(auto& name: this -> file)
+            {
+                if(name -> get_file_name() == file_name)
+                    return std::make_tuple(name, true);
+            }
+            return std::make_tuple(nullptr, false);
         }
     };
 }

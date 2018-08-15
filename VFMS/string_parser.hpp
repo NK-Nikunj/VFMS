@@ -6,6 +6,7 @@
 
 // Includes all necessary
 #include "command_map.hpp"
+#include "file.hpp"
 
 namespace vfms
 {
@@ -74,6 +75,7 @@ namespace vfms
                     // Return back the current folder
                     return current_folder;
                 
+
                 // 'mkdir' can create multiple folders at a single time
                 case mkdir:
                     if(this -> arguments.size() == 1)
@@ -105,6 +107,8 @@ namespace vfms
                     // Return back the current folder
                     return current_folder;
                 
+
+                // 'cd' command allows to enter and leave directories
                 case cd:
                     if(this -> arguments.size() == 2)
                     {
@@ -130,6 +134,58 @@ namespace vfms
                 
                 case ned:
                     break;
+
+                // 'cat' command shows content of files
+                case cat:
+                    // Opens up a shell which shows anything written. Closes
+                    // on typing exit
+                    if(this -> arguments.size() == 1)
+                    {
+                        std::string write_lines;
+                        do
+                        {
+                            // Takes input of the string
+                            std::getline(std::cin, write_lines);
+                            // Outputs whatever is written
+                            std::cout << write_lines << std::endl;
+
+                        } while(write_lines != "quit");
+                    } else if(this -> arguments.size() == 2)
+                    {
+                        vfms::vfs* temp = current_folder;
+                        // Returned tuple containing the details
+                        auto returned_tuple = current_folder -> go_to_file(this -> arguments[1]);
+                        // Store folder address as a temperory variable
+                        temp = std::get<0>(returned_tuple);
+                        // initialize file_name with returned file name
+                        std::string file_name = std::get<1>(returned_tuple);
+
+                        // check if the file name is actually a folder name
+                        bool is_file_folder = current_folder -> is_folder(file_name);
+
+                        if(is_file_folder)
+                        {
+                            // Raise error saying file name is a directory 
+                            std::cerr << "cat: " << file_name << ": Is a directory" << std::endl;
+                        } else {
+                            // Returns file status. Either file address and true
+                            // or nullptr and false
+                            auto file_status = current_folder -> get_file(file_name);
+
+                            vfms::file* file_address = std::get<0>(file_status);
+                            if(file_address)
+                            {
+                                file_address -> print_file_content();
+                            } else
+                            {
+                                // The given file does not exists.
+                                std::cerr << "cat: " << file_name << ": "
+                                    "No such file or directory" << std::endl;
+                            }
+                        }
+                    }
+                    // Return back the current folder
+                    return current_folder;
                 
                 case quit:
                     std::exit(0);
