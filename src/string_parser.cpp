@@ -10,6 +10,7 @@
 namespace vfms
 {
     extern std::unordered_map<std::string, commands> valid_commands;
+    extern void exec_ls(std::vector<std::string> args);
 
     string_parser::string_parser(std::vector<std::string> arguments)
     {
@@ -44,6 +45,7 @@ namespace vfms
         {
             // 'ls' command shows files and folders in the current directory
             case ls:
+                exec_ls(this -> arguments);
                 if(this -> arguments.size() == 1)
                 {
                     // Since argument count is 1, simply show contents from current
