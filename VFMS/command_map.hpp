@@ -20,17 +20,6 @@ namespace vfms
         // cp,
         // mv
     };
-
-    inline std::unordered_map<std::string, commands> valid_commands = 
-    {
-        {"ls", commands::ls},
-        { "mkdir", commands::mkdir },
-        { "cd", commands::cd },
-        { "touch", commands::touch },
-        { "ned", commands::ned },
-        { "cat", commands::cat },
-        { "quit", commands::quit },
-    };
 }
 
 #endif /* STRING_MAP_HPP */
