@@ -1,3 +1,4 @@
+#include <VFMS/command/ls.hpp>
 #include <VFMS/command/realize_command.hpp>
 #include <VFMS/command_map.hpp>
 
@@ -15,36 +16,59 @@ namespace vfms
     {
         struct command::command_stat* stats = new struct command::command_stat;
 
-        commands command_type;
-        // unordered_map returns an exception if it doesn't find any element.
-        try
-        {
-            command_type = valid_commands.at(args[0]);
-        } catch (...)
-        {
-            // Command could not be found in the list of valid command.
-            std::cerr << args[0] << " is not a valid command." << std::endl;
-            return nullptr;
-        }
-
         for(int i = 1; i < args.size(); ++i)
         {
-            std::string dash = "-";
-            if(args[i].at(0) == dash.at(0))
-            {
-                try
-                {
-                    if(args[i].at(1) == dash.at(0))
-                    {
+            std::string help_tag = "-";
+            std::string escape_character = "\\";
 
-                    }
-                }
-                catch(...)
+            /* There are can be 3 type of arguments.
+                1. Directories/file
+                2. partial helper tag (ex: ls -la)
+                3. Complete helper tags (ex: ls --help)
+            */
+            try
+            {
+                // Check if it is a helper tag
+                if(args.at(i).at(0) == help_tag)
                 {
-                    std::cerr << "Could not understand the command." << std::endl;
-                    return nullptr;
+                    if(args.at(i).at(1) != help_tag)
+                        stats -> partial_help_tag.push_back(args.at(i).substr(help_tag));
+                    else
+                        stats -> complete_help_tag.push_back(args.at(i).substr(help_tag + help_tag));
+                }
+                // It is a directory
+                else
+                {
+                    // Starting off with an empty path
+                    std::string dir_name = "";
+                    if(args.at(i).at(args.at(i).size() - 1) != escape_character)
+                    {
+                        dir_name.append(args.at(i));
+                    }
+                    else
+                    {
+                        // Get complete path to the file/directory
+                        while(args.at(i).at(args.at(i).size() - 1) == escape_character)
+                        {
+                            dir_name.append(args.at(i).substr(0, args.at(i).size() - 2));
+                            dir_name.append(" ");
+                            i++;
+                        }
+                        // Complete path to the file/directory
+                        dir_name = dir_name.substr(0, dir_name.size() - 2);
+                        i--;    // Since we increment i, we need decrement to get back to actual i
+                    }
+
+                    stats -> dir_name.push_back(dir_name);
                 }
             }
+            catch(...)
+            {
+                return nullptr;
+            }
         }
+
+        // Technical knowledge about the arguments received
+        return stats;
     }
 }

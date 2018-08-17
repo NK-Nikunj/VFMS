@@ -12,10 +12,9 @@ namespace vfms
         // the command.
         struct command_stat
         {
-            std::string command_to_execute;
             std::vector<std::string> complete_help_tag;
             std::vector<std::string> partial_help_tag;
-            std::string dir_name;
+            std::vector<std::string> dir_name;
         };
     }
 }
