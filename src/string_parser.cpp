@@ -10,6 +10,7 @@
 namespace vfms
 {
     extern std::unordered_map<std::string, commands> valid_commands;
+    extern void exec_ls(std::vector<std::string> args, vfs* current_folder);
 
     string_parser::string_parser(std::vector<std::string> arguments)
     {
@@ -44,29 +45,8 @@ namespace vfms
         {
             // 'ls' command shows files and folders in the current directory
             case ls:
-                if(this -> arguments.size() == 1)
-                {
-                    // Since argument count is 1, simply show contents from current
-                    // directory.
-                    current_folder -> show_content();
+                exec_ls(this -> arguments, current_folder);
                 
-                } else if(this -> arguments.size() == 2)
-                {
-                    // Move to the specified directory. If there is none then raise
-                    // alert that the folder does not exists.
-                    vfms::vfs* get_to_folder =
-                                    current_folder -> go_to(this -> arguments[1]);
-                    
-                    // Check if an error wasn't raised
-                    if(get_to_folder != nullptr)
-                        get_to_folder -> show_content();
-                
-                } else
-                {   
-                    // Incorrect usage of the command. Raise an error.
-                    std::cerr << "Wrong use of command 'ls'.\n"
-                        "Usage: ls path/to/directory" << std::endl;
-                }
                 // Return back the current folder
                 return current_folder;
             
