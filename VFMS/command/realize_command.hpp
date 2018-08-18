@@ -6,14 +6,14 @@
 
 namespace vfms
 {
-    namespace command
+    namespace command_line
     {
         // Contains all the necessary details for understanding
         // the command.
         struct command_stat
         {
             std::vector<std::string> complete_help_tag;
-            std::vector<std::string> partial_help_tag;
+            std::string partial_help_tag;
             std::vector<std::string> dir_name;
         };
     }
