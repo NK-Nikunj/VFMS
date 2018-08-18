@@ -16,10 +16,14 @@ namespace vfms
         vfms::vfs* parent_folder;
         // folder will be of the type vfs
         std::vector<vfms::vfs*> folders;
+        // hidden folders be of the type vfs
+        std::vector<vfms::vfs*> hidden_folders;
         // folder name for the current vfs
         std::string vfs_name;
         // a folder can contain files as well
         std::vector<vfms::file*> file;
+        // a folder can contain files as well
+        std::vector<vfms::file*> hidden_file;
 
         // Special aliases for 'cd' movement
         std::string folder_alias = ".";
@@ -113,7 +117,73 @@ namespace vfms
                 for(auto& file_name: this -> file)
                     std::cout << file_name -> get_file_name() << std::endl;
             }
+        }
 
+        // 'ls' command with hidden on
+        void show_hidden_content()
+        {
+            std::cout << ".\n..\n";
+            if(!this -> hidden_folders.empty())
+            {
+                for(auto& folder: this -> hidden_folders)
+                    std::cout << folder -> vfs_name << std::endl;    
+            }
+            if(!this -> folders.empty())
+            {
+                for(auto& folder: this -> folders)
+                    std::cout << folder -> vfs_name << std::endl;
+            }
+            if(!this -> hidden_file.empty())
+            {
+                for(auto& file_name: this -> hidden_file)
+                    std::cout << file_name -> get_file_name() << std::endl;
+            }
+            if(!this -> file.empty())
+            {
+                for(auto& file_name: this -> file)
+                    std::cout << file_name -> get_file_name() << std::endl;
+            }
+        }
+
+        // 'ls' command with list on
+        void show_list_content()
+        {
+            if(!this -> folders.empty())
+            {
+                for(auto& folder: this -> folders)
+                    std::cout << "user user " << folder -> vfs_name << std::endl;
+            }
+            if(!this -> file.empty())
+            {
+                for(auto& file_name: this -> file)
+                    std::cout << "user user " << file_name -> get_file_name() << std::endl;
+            }
+        }
+
+        // 'ls' command with hidden and list on
+        void show_hidden_list_content()
+        {
+            std::cout << "user user .\nuser user ..\n";
+            if(!this -> hidden_folders.empty())
+            {
+                for(auto& folder: this -> hidden_folders)
+                    std::cout << "user user " << folder -> vfs_name << std::endl;    
+            }
+            if(!this -> folders.empty())
+            {
+                for(auto& folder: this -> folders)
+                    std::cout << "user user " << folder -> vfs_name << std::endl;
+            }
+            if(!this -> hidden_file.empty())
+            {
+                for(auto& file_name: this -> hidden_file)
+                    std::cout << "user user " << file_name -> get_file_name() << std::endl;
+            }
+            if(!this -> file.empty())
+            {
+                for(auto& file_name: this -> file)
+                    std::cout << "user user " << file_name -> get_file_name() << std::endl;
+            }
         }
 
         // Go to folder

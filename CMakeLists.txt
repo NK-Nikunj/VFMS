@@ -16,7 +16,11 @@ set(USED_LIBS ${Boost_SYSTEM_LIBRARY} ${Boost_THREAD_LIBRARY} ${Boost_REGEX_LIBR
 include_directories(${CMAKE_SOURCE_DIR})
 
 set(SOURCES
+    src/assets/error.cpp
+    src/assets/usage.cpp
     src/command_map.cpp
+    src/ls.cpp
+    src/process_args.cpp
     src/string_parser.cpp
 )
 

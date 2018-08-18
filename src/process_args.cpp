@@ -29,9 +29,9 @@ namespace vfms
                 if(args.at(i).at(0) == '-')
                 {
                     if(args.at(i).at(1) != '-')
-                        stats -> partial_help_tag.append(args.at(i).substr(help_tag));
+                        stats -> partial_help_tag.append(args.at(i).substr(1, args.at(i).size() - 1));
                     else
-                        stats -> complete_help_tag.push_back(args.at(i).substr(help_tag + help_tag));
+                        stats -> complete_help_tag.push_back(args.at(i).substr(2, args.at(i).size() - 2));
                 }
                 // It is a directory
                 else

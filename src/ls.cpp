@@ -1,5 +1,6 @@
 #include <VFMS/command/realize_command.hpp>
 #include <VFMS/command_map.hpp>
+#include <VFMS/vfs.hpp>
 
 #include <vector>
 #include <string>
@@ -47,6 +48,12 @@ namespace vfms
 
     struct ls
     {
+        // store the info related to the command
+        struct command_line::command_stat* obj;
+
+        // Storing current folder
+        vfs* current_folder;
+
         // short tags
         bool is_l;
         bool is_a;
@@ -55,8 +62,11 @@ namespace vfms
         bool is_all;
         bool is_help;
 
-        ls()
+        ls(vfs* current_folder, struct command_line::command_stat* obj)
         {
+            this -> obj = obj;
+            this -> current_folder = current_folder;
+
             is_l = false;
             is_a = false;
             is_all = false;
@@ -71,20 +81,105 @@ namespace vfms
                         "List information about the FILEs\n"
                         "\nOptions:\n"
                         "\t-a, --all\t\tDo not ignore entries starting with .\n"
-                        "\t-l\t\tUse long listing format\n"
-                        "\t--help\t\tDisplay help text\n";
+                        "\t-l\t\t\tUse long listing format\n"
+                        "\t--help\t\t\tDisplay help text\n";
             
             return;
         }
 
-        void list_down()
+        void write_a_l()
         {
-            if(this -> is_a || this -> is_all)
+            if(obj -> dir_name.size() == 0)
             {
-                if(this -> is_l)
-                {
+                current_folder -> show_hidden_list_content();
+            }
+            else if(obj -> dir_name.size() == 1)
+            {
+                vfs* get_to_folder = 
+                    current_folder -> go_to(obj -> dir_name.at(0));
 
-                }
+                // check whether an error is raised
+                if(get_to_folder != nullptr)
+                    get_to_folder -> show_hidden_list_content();
+            }
+            else
+            {
+                // The command was not provided correctly
+                assets::send_error("ls");
+                assets::usage("ls");
+                return;
+            }
+        }
+
+        void write_a()
+        {
+            if(obj -> dir_name.size() == 0)
+            {
+                current_folder -> show_hidden_content();
+            }
+            else if(obj -> dir_name.size() == 1)
+            {
+                vfs* get_to_folder = 
+                    current_folder -> go_to(obj -> dir_name.at(0));
+
+                // check whether an error is raised
+                if(get_to_folder != nullptr)
+                    get_to_folder -> show_hidden_content();
+            }
+            else
+            {
+                // The command was not provided correctly
+                assets::send_error("ls");
+                assets::usage("ls");
+                return;
+            }
+        }
+
+        void write_l()
+        {
+            if(obj -> dir_name.size() == 0)
+            {
+                current_folder -> show_list_content();
+            }
+            else if(obj -> dir_name.size() == 1)
+            {
+                vfs* get_to_folder = 
+                    current_folder -> go_to(obj -> dir_name.at(0));
+
+                // check whether an error is raised
+                if(get_to_folder != nullptr)
+                    get_to_folder -> show_list_content();
+            }
+            else
+            {
+                // The command was not provided correctly
+                assets::send_error("ls");
+                assets::usage("ls");
+                return;
+            }
+        }
+
+        void write()
+        {
+            if(obj -> dir_name.size() == 0)
+            {
+                current_folder -> show_content();
+            }
+            else if(obj -> dir_name.size() == 1)
+            {
+                vfs* get_to_folder = 
+                    current_folder -> go_to(obj -> dir_name.at(0));
+
+                // check whether an error is raised
+                if(get_to_folder != nullptr)
+                    get_to_folder -> show_content();
+            }
+            else
+            {
+                // The command was not provided correctly
+                assets::send_error("ls");
+                assets::usage("ls");
+                return;
             }
         }
 
@@ -96,16 +191,44 @@ namespace vfms
                 return;
             }
 
-            this -> list_down();
+            if(this -> is_a || this -> is_all)
+            {
+                if(this -> is_l)
+                {
+                    this -> write_a_l();
+                }
+                else
+                {
+                    this -> write_a();
+                }
+            }
+            else if(this -> is_l)
+            {
+                this -> write_l();
+            }
+            else
+            {
+                this -> write();
+            }
         }
     };
 
-    std::vector<std::string> get_short_tags(std::string args, struct ls ls_object)
+    std::vector<std::string> get_short_tags(std::string args, struct ls& ls_object)
     {
+        std::vector<std::string> null;
+
+        if(args.empty())
+            return null;
+
         std::vector<std::string> short_args;
 
+        std::string single_char;
         // split about every character
-        short_args = boost::split(short_args, args, boost::is_any_of(""));
+        for(auto&& character: args)
+        {
+            single_char = character;
+            short_args.push_back(single_char);
+        }
 
         // initializing the enum object
         ls_options_short tag;
@@ -132,20 +255,28 @@ namespace vfms
             assets::send_error(command);
             assets::usage(command);
 
-            std::vector<std::string> null;
             return null;
         }
 
         return short_args;
     }
 
-    void exec_ls(std::vector<std::string> args)
-    {
+    void exec_ls(std::vector<std::string> args, vfs* current_folder)
+    {   
         struct command_line::command_stat* obj = process_args(args);
 
-        struct ls ls_object;
-
         if(obj == nullptr)
+        {
+                std::string command = "ls";
+                assets::send_error(command);
+                assets::usage(command);
+
+                return;
+        }
+
+        struct ls ls_object(current_folder, obj);
+
+        if(ls_object.obj == nullptr)
         {
             // The command was not provided correctly
             assets::send_error(args.at(0));
@@ -154,27 +285,36 @@ namespace vfms
         }
         else
         {
-            // Some short tags can be used in conjunction. We need
-            // to distinguish them form each other.
-            std::vector<std::string> short_tags = get_short_tags(obj -> partial_help_tag, ls_object);
-        
+            if(!ls_object.obj -> partial_help_tag.empty())
+            {
+                // Some short tags can be used in conjunction. We need
+                // to distinguish them form each other.
+                std::vector<std::string> short_tags = get_short_tags(ls_object.obj -> partial_help_tag, std::ref(ls_object));
+            
+                if(short_tags.empty())
+                    return;
+            }
+
             // initializing the enum object
             ls_options_long tag;
 
             try
-            {
-                for(auto&& arg: obj -> complete_help_tag)
-                {
-                    tag = ls_long_tags.at(arg);
-
-                    switch(tag) 
+            {   if(!obj -> complete_help_tag.empty())
+                {   
+                    for(auto&& arg: ls_object.obj -> complete_help_tag)
                     {
-                        case all:
-                            ls_object.is_all = true;
-                            break;
-                        case help:
-                            ls_object.is_help = true;
-                            break;
+                        
+                        tag = ls_long_tags.at(arg);
+
+                        switch(tag) 
+                        {
+                            case all:
+                                ls_object.is_all = true;
+                                break;
+                            case help:
+                                ls_object.is_help = true;
+                                break;
+                        }
                     }
                 }    
             } catch(...)
@@ -186,10 +326,7 @@ namespace vfms
                 return;
             }
 
-            if(!short_tags.empty() && !obj -> partial_help_tag.empty())
-            {
-                ls_object.process();
-            }
+            ls_object.process();
         }
     }
 }

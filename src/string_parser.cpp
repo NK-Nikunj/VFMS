@@ -10,7 +10,7 @@
 namespace vfms
 {
     extern std::unordered_map<std::string, commands> valid_commands;
-    extern void exec_ls(std::vector<std::string> args);
+    extern void exec_ls(std::vector<std::string> args, vfs* current_folder);
 
     string_parser::string_parser(std::vector<std::string> arguments)
     {
@@ -45,7 +45,7 @@ namespace vfms
         {
             // 'ls' command shows files and folders in the current directory
             case ls:
-                exec_ls(this -> arguments);
+                exec_ls(this -> arguments, current_folder);
                 
                 // Return back the current folder
                 return current_folder;
