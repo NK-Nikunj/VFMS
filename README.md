@@ -28,3 +28,23 @@ To run the vfms executable:
 ```
     $ ./vfms
 ```
+
+## Supported Commands
+
+This is a comprehensive list of commands that we currently support with VFMS:
+
+```
+    1. ls
+    2. mkdir
+    3. cd
+    4. touch
+    5. ned
+    6. cat
+    7. quit
+```
+
+
+### Notes
+
+If interested in visiting previous commits for building, do NOT choose a commit with commit message starting with [WIP].
+These commits can't be build since the work was still in progress before testing.
