@@ -53,6 +53,7 @@ namespace vfms
 
             // 'mkdir' can create multiple folders at a single time
             case mkdir:
+                exec_mkdir(this -> arguments, current_folder);
                 if(this -> arguments.size() == 1)
                 {
                     // Incorrect usage of mkdir. Raise an error.
