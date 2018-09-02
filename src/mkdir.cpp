@@ -118,12 +118,9 @@ namespace vfms
         {
             if(!mkdir_object.obj -> partial_help_tag.empty())
             {
-                // Some short tags can be used in conjunction. We need
-                // to distinguish them form each other.
-                std::vector<std::string> short_tags = get_short_tags(mkdir_object.obj -> partial_help_tag, std::ref(mkdir_object));
-            
-                if(short_tags.empty())
-                    return;
+                assets::send_error((std::string)"mkdir");
+                assets::usage((std::string)"mkdir");
+                return;
             }
 
             // initializing the enum object

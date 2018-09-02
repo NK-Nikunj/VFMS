@@ -18,7 +18,7 @@ namespace vfms
             std::string help_tag = "-";
             std::string escape_character = "\\";
 
-            /* There are can be 3 type of arguments.
+            /* There can be 3 type of arguments.
                 1. Directories/file
                 2. partial helper tag (ex: ls -la)
                 3. Complete helper tags (ex: ls --help)
@@ -29,9 +29,13 @@ namespace vfms
                 if(args.at(i).at(0) == '-')
                 {
                     if(args.at(i).at(1) != '-')
+                    {
                         stats -> partial_help_tag.append(args.at(i).substr(1, args.at(i).size() - 1));
+                    }
                     else
+                    {
                         stats -> complete_help_tag.push_back(args.at(i).substr(2, args.at(i).size() - 2));
+                    }
                 }
                 // It is a directory
                 else
@@ -47,13 +51,13 @@ namespace vfms
                         // Get complete path to the file/directory
                         while(args.at(i).at(args.at(i).size() - 1) == '\\')
                         {
-                            dir_name.append(args.at(i).substr(0, args.at(i).size() - 2));
+                            dir_name.append(args.at(i).substr(0, args.at(i).size() - 1));
                             dir_name.append(" ");
                             i++;
                         }
                         // Complete path to the file/directory
-                        dir_name = dir_name.substr(0, dir_name.size() - 2);
-                        i--;    // Since we increment i, we need decrement to get back to actual i
+                        dir_name.append(args.at(i));
+                        i++;    // Passing to the next arg
                     }
 
                     stats -> dir_name.push_back(dir_name);
