@@ -20,6 +20,7 @@ set(SOURCES
     src/assets/usage.cpp
     src/command_map.cpp
     src/ls.cpp
+    src/mkdir.cpp
     src/process_args.cpp
     src/string_parser.cpp
 )

@@ -11,6 +11,7 @@ namespace vfms
 {
     extern std::unordered_map<std::string, commands> valid_commands;
     extern void exec_ls(std::vector<std::string> args, vfs* current_folder);
+    extern void exec_mkdir(std::vector<std::string> args, vfs* current_folder);
 
     string_parser::string_parser(std::vector<std::string> arguments)
     {
@@ -53,32 +54,7 @@ namespace vfms
 
             // 'mkdir' can create multiple folders at a single time
             case mkdir:
-                if(this -> arguments.size() == 1)
-                {
-                    // Incorrect usage of mkdir. Raise an error.
-                    std::cerr << "Wrong use of command 'mkdir'.\n"
-                        "Usage: mkdir dir1 dir2 dir3" << std::endl;
-
-                } else
-                {
-                    for(int i = 1; i != this -> arguments.size(); ++i)
-                    {
-                        // Move to the specified directory. If there is 
-                        // none then raise alert that the folder 
-                        // does not exists.
-                        vfms::vfs* get_to_folder =
-                            current_folder -> go_to(this -> arguments[i], true);
-
-                        if(get_to_folder == current_folder){
-                            // Make directory in the current folder
-                            current_folder -> create_folder(this -> arguments[i]);
-                        } else if(get_to_folder != nullptr)
-                        {
-                            // Make directory in a different folder
-                            get_to_folder -> create_folder(this -> arguments[i]);
-                        }
-                    }
-                }
+                exec_mkdir(this -> arguments, current_folder);
                 // Return back the current folder
                 return current_folder;
             
