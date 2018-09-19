@@ -10,6 +10,7 @@
 namespace vfms
 {
     extern std::unordered_map<std::string, commands> valid_commands;
+    extern void exec_cd(std::vector<std::string> args, vfs* current_folder);
     extern void exec_ls(std::vector<std::string> args, vfs* current_folder);
     extern void exec_mkdir(std::vector<std::string> args, vfs* current_folder);
 
@@ -61,6 +62,8 @@ namespace vfms
 
             // 'cd' command allows to enter and leave directories
             case cd:
+                exec_cd(this -> arguments, current_folder);
+
                 if(this -> arguments.size() == 2)
                 {
                     vfms::vfs* temp = current_folder;
