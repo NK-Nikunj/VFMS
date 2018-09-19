@@ -71,15 +71,11 @@ namespace vfms
             if(obj -> dir_name.size() != 0)
             {
                 vfs* get_to_folder =
-                    current_folder -> go_to(obj -> dir_name.at(0), true);
-                if(get_to_folder == current_folder)
+                    current_folder -> go_to(obj -> dir_name.at(0));
+                if(get_to_folder != nullptr)
                 {
-                    // Make directory in the current folder
-                    current_folder -> create_folder(obj -> dir_name.at(obj -> dir_name.size() - 1));
-                } else if(get_to_folder != nullptr)
-                {
-                    // Make directory in a different folder
-                    get_to_folder -> create_folder(obj -> dir_name.at(obj -> dir_name.size() - 1));
+                    // Make directory in a different folderget_to_folder -> create_folder(obj -> dir_name.at(obj -> dir_name.size() - 1));
+                    this -> current_folder = get_to_folder;
                 }
             }
             else
@@ -92,7 +88,7 @@ namespace vfms
         }
     };
 
-    void exec_cd(std::vector<std::string> args, vfs* current_folder)
+    vfs* exec_cd(std::vector<std::string> args, vfs* current_folder)
     {   
         struct command_line::command_stat* obj = process_args(args);
 
@@ -102,7 +98,7 @@ namespace vfms
                 assets::send_error(command);
                 assets::usage(command);
 
-                return;
+                return nullptr;
         }
 
         struct cd cd_object(current_folder, obj);
@@ -112,7 +108,7 @@ namespace vfms
             // The command was not provided correctly
             assets::send_error(args.at(0));
             assets::usage(args.at(0));
-            return;
+            return nullptr;
         }
         else
         {
@@ -120,7 +116,7 @@ namespace vfms
             {
                 assets::send_error((std::string)"cd");
                 assets::usage((std::string)"cd");
-                return;
+                return nullptr;
             }
 
             // initializing the enum object
@@ -148,10 +144,11 @@ namespace vfms
                 assets::send_error(command);
                 assets::usage(command);
 
-                return;
+                return nullptr;
             }
 
             cd_object.process();
+            return cd_object.current_folder;
         }
     }
 }

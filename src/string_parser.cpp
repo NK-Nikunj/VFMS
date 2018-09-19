@@ -10,7 +10,7 @@
 namespace vfms
 {
     extern std::unordered_map<std::string, commands> valid_commands;
-    extern void exec_cd(std::vector<std::string> args, vfs* current_folder);
+    extern vfs* exec_cd(std::vector<std::string> args, vfs* current_folder);
     extern void exec_ls(std::vector<std::string> args, vfs* current_folder);
     extern void exec_mkdir(std::vector<std::string> args, vfs* current_folder);
 
@@ -62,24 +62,24 @@ namespace vfms
 
             // 'cd' command allows to enter and leave directories
             case cd:
-                exec_cd(this -> arguments, current_folder);
+                current_folder = exec_cd(this -> arguments, current_folder);
 
-                if(this -> arguments.size() == 2)
-                {
-                    vfms::vfs* temp = current_folder;
-                    temp = current_folder -> go_to(this -> arguments[1]);
+                // if(this -> arguments.size() == 2)
+                // {
+                //     vfms::vfs* temp = current_folder;
+                //     temp = current_folder -> go_to(this -> arguments[1]);
 
-                    // Only assign temp to current folder when there is no
-                    // error raised.
-                    if(temp != nullptr)
-                        current_folder = temp;
+                //     // Only assign temp to current folder when there is no
+                //     // error raised.
+                //     if(temp != nullptr)
+                //         current_folder = temp;
 
-                } else
-                {
-                    // Incorrect usage of cd. Raise an error.
-                    std::cerr << "Wrong use of command 'cd'.\n"
-                        "Usage: cd path/to/dir" << std::endl;                        
-                }
+                // } else
+                // {
+                //     // Incorrect usage of cd. Raise an error.
+                //     std::cerr << "Wrong use of command 'cd'.\n"
+                //         "Usage: cd path/to/dir" << std::endl;                        
+                // }
                 // Return back the current folder
                 return current_folder;
 
