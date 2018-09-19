@@ -18,6 +18,7 @@ include_directories(${CMAKE_SOURCE_DIR})
 set(SOURCES
     src/assets/error.cpp
     src/assets/usage.cpp
+    src/cd.cpp
     src/command_map.cpp
     src/ls.cpp
     src/mkdir.cpp
