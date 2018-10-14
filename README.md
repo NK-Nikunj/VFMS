@@ -48,3 +48,5 @@ This is a comprehensive list of commands that we currently support with VFMS:
 
 If interested in visiting previous commits for building, do NOT choose a commit with commit message starting with [WIP].
 These commits can't be build since the work was still in progress before testing.
+
+Build checks powered by Codeship
